@@ -238,6 +238,14 @@ class OwnerShopController extends Controller
         $lng = $request->lng;
         $radius = $request->radius ?? 50; // default 50km
 
+        if (DB::connection() instanceof \Illuminate\Database\SQLiteConnection) {
+            $pdo = DB::connection()->getPdo();
+            $pdo->sqliteCreateFunction('acos', 'acos', 1);
+            $pdo->sqliteCreateFunction('cos', 'cos', 1);
+            $pdo->sqliteCreateFunction('radians', 'deg2rad', 1);
+            $pdo->sqliteCreateFunction('sin', 'sin', 1);
+        }
+
         $data = OwnerShop::select('*')
             ->selectRaw("( 6371 * acos( cos( radians(?) ) *
                 cos( radians( lat ) )
