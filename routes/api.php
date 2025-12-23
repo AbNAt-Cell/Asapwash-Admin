@@ -37,7 +37,7 @@ Route::group(['prefix' => 'employee'], function () {
         Route::post('storeDeviceToken', 'AppUsersController@storeDeviceToken');
 
         Route::get('profile', function (Request $request) {
-            return response()->json(['success' => true,'data'=>$request->user()]);
+            return response()->json(['success' => true, 'data' => $request->user()]);
         });
         Route::post('storeDeviceToken', 'AppUsersController@storeDeviceToken');
         Route::group(['namespace' => 'ShopOwner'], function () {
@@ -50,8 +50,8 @@ Route::group(['prefix' => 'employee'], function () {
         });
     });
 
-    Route::get('apiConnectionTest' , function(){
-        return response()->json(['success' => true,'message'=>'API connection successful'], 200);
+    Route::get('apiConnectionTest', function () {
+        return response()->json(['success' => true, 'message' => 'API connection successful'], 200);
     });
 });
 
@@ -80,11 +80,11 @@ Route::group(['prefix' => 'owner'], function () {
                 'shop' => 'OwnerShopController',
                 'package' => 'PackageController',
             ]);
-            Route::get('/shop_id/{id}','OwnerShopController@singleShop');
+            Route::get('/shop_id/{id}', 'OwnerShopController@singleShop');
         });
         Route::post('register', 'ShopOwnerController@store');
         Route::post('login', 'ShopOwnerController@login');
-      
+
     });
     Route::group(['middleware' => ['auth:shopOwner']], function () {
         Route::post('profile/update', 'AppUsersController@profileUpdate');
@@ -94,7 +94,7 @@ Route::group(['prefix' => 'owner'], function () {
         Route::post('storeDeviceToken', 'AppUsersController@storeDeviceToken');
 
         Route::get('profile', function (Request $request) {
-            return response()->json(['data'=>$request->user(),'success'=>true]);
+            return response()->json(['data' => $request->user(), 'success' => true]);
         });
     });
     Route::post('verifyMe', 'AppUsersController@verifyMe');
@@ -102,8 +102,8 @@ Route::group(['prefix' => 'owner'], function () {
     Route::post('forgot/validate', 'AppUsersController@forgotValidate');
     Route::get('privacy', 'AppUsersController@privacy');
 
-    Route::get('apiConnectionTest' , function(){
-        return response()->json(['success' => true,'message'=>'API connection successful'], 200);
+    Route::get('apiConnectionTest', function () {
+        return response()->json(['success' => true, 'message' => 'API connection successful'], 200);
     });
 });
 
@@ -128,7 +128,7 @@ Route::group(['prefix' => 'user'], function () {
         Route::post('profile/password/update', 'AppUsersController@password');
         Route::post('profile/picture/update', 'AppUsersController@profilePictureUpdate');
         Route::get('profile', function (Request $request) {
-            return response()->json(['success' => true,'data'=>$request->user()]);
+            return response()->json(['success' => true, 'data' => $request->user()]);
 
         });
         Route::post('storeDeviceToken', 'AppUsersController@storeDeviceToken');
@@ -141,6 +141,7 @@ Route::group(['prefix' => 'user'], function () {
         Route::get('shop/{id}', 'OwnerShopController@singleShop');
         Route::get('category/{id}', 'OwnerShopController@shopByCategory');
         Route::get('shop', 'OwnerShopController@allShop');
+        Route::get('search/shop', 'OwnerShopController@searchByLocation');
         Route::get('package/{id}', 'OwnerShopController@packageSingle');
         Route::get('shop/{id}/service/{catid}', 'OwnerShopController@shopServiceByCate');
         Route::post('storeDeviceToken', 'AppUsersController@storeDeviceToken');
@@ -155,7 +156,7 @@ Route::group(['prefix' => 'user'], function () {
     Route::post('forgot/validate', 'AppUsersController@forgotValidate');
     Route::post('newpassword', 'AppUsersController@newPassword');
 
-    Route::get('apiConnectionTest' , function(){
-        return response()->json(['success' => true,'message'=>'API connection successful'], 200);
+    Route::get('apiConnectionTest', function () {
+        return response()->json(['success' => true, 'message' => 'API connection successful'], 200);
     });
 });

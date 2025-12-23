@@ -9,11 +9,27 @@ class OwnerShop extends Model
     //
 
     protected $fillable = [
-        'owner_id', 'service_id', 'employee_id', 'name', 'address', 'image', 'phone_no', 'is_popular', 'is_best', 'status', 'end_time', 'start_time', 'package_id','service_type'
+        'owner_id',
+        'service_id',
+        'employee_id',
+        'name',
+        'address',
+        'image',
+        'phone_no',
+        'is_popular',
+        'is_best',
+        'status',
+        'end_time',
+        'start_time',
+        'package_id',
+        'service_type',
+        'lat',
+        'lng'
     ];
     protected $table = 'owner_shops';
     protected $hidden = [
-        'created_at', 'updated_at'
+        'created_at',
+        'updated_at'
     ];
     protected $appends = ['imageUri', 'avg_rating'];
     public function getImageUriAttribute()
@@ -35,10 +51,10 @@ class OwnerShop extends Model
     {
         return explode(',', $value);
     }
-  
+
     public function getAvgRatingAttribute()
     {
-      
+
         $revData = Review::where('shop_id', $this->attributes['id'])->get();
         $star = $revData->sum('star');
         if ($star > 1) {
@@ -49,15 +65,15 @@ class OwnerShop extends Model
     }
     public function getServiceDataAttribute()
     {
-        return  SubCategories::whereIn('id', explode(',', $this->attributes['service_id']))->get(['name', 'id','description','duration','price']);
+        return SubCategories::whereIn('id', explode(',', $this->attributes['service_id']))->get(['name', 'id', 'description', 'duration', 'price']);
     }
     public function getEmployeeDataAttribute()
     {
-        return  ShopEmployee::whereIn('id', explode(',', $this->attributes['employee_id']))->get(['name', 'id','email','online','image']);
+        return ShopEmployee::whereIn('id', explode(',', $this->attributes['employee_id']))->get(['name', 'id', 'email', 'online', 'image']);
     }
     public function getPackageDataAttribute()
     {
-        return  Package::whereIn('id', explode(',', $this->attributes['package_id']))->get();
+        return Package::whereIn('id', explode(',', $this->attributes['package_id']))->get();
     }
     public function Reviews()
     {

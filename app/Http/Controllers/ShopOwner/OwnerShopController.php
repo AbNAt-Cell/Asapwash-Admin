@@ -13,11 +13,13 @@ use Illuminate\Http\Request;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GoogleMapsHelper;
 use App\Notifications;
 use App\Package;
 use App\SubCategories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OwnerShopController extends Controller
 {
@@ -28,7 +30,7 @@ class OwnerShopController extends Controller
      */
     public function index()
     {
-        $data =   OwnerShop::where('owner_id', Auth::id())->get();
+        $data = OwnerShop::where('owner_id', Auth::id())->get();
         return response()->json(['msg' => null, 'data' => $data, 'success' => true], 200);
     }
 
@@ -63,6 +65,15 @@ class OwnerShopController extends Controller
         if (isset($reqData['image'])) {
             $reqData['image'] = (new AppHelper)->saveBase64($reqData['image']);
         }
+
+        if (!isset($reqData['lat']) || !isset($reqData['lng'])) {
+            $coords = GoogleMapsHelper::getCoordinates($reqData['address']);
+            if ($coords) {
+                $reqData['lat'] = $coords['lat'];
+                $reqData['lng'] = $coords['lng'];
+            }
+        }
+
         $reqData['owner_id'] = Auth::id();
         $data = OwnerShop::create($reqData);
         return response()->json(['msg' => 'Shop added successfully', 'data' => $data, 'success' => true], 200);
@@ -74,10 +85,10 @@ class OwnerShopController extends Controller
      * @param  \App\OwnerShop  $ownerShop
      * @return \Illuminate\Http\Response
      */
-    public function show($id,OwnerShop $ownerShop)
+    public function show($id, OwnerShop $ownerShop)
     {
         //
-        $shop = OwnerShop::find($id)->setAppends(['imageUri', 'avg_rating', 'packageData','serviceData','employeeData']);
+        $shop = OwnerShop::find($id)->setAppends(['imageUri', 'avg_rating', 'packageData', 'serviceData', 'employeeData']);
         $cat = SubCategories::whereIn('id', $shop->service_id)->groupBy('cat_id')->pluck('cat_id');
         $shop['cate'] = Category::whereIn('id', $cat)->where('status', 1)->get(['id', 'name', 'icon']);
         return response()->json(['msg' => null, 'data' => $shop, 'success' => true], 200);
@@ -109,8 +120,17 @@ class OwnerShopController extends Controller
         if (isset($reqData['image'])) {
             $reqData['image'] = (new AppHelper)->saveBase64($reqData['image']);
         }
+
+        if (isset($reqData['address']) && (!isset($reqData['lat']) || !isset($reqData['lng']))) {
+            $coords = GoogleMapsHelper::getCoordinates($reqData['address']);
+            if ($coords) {
+                $reqData['lat'] = $coords['lat'];
+                $reqData['lng'] = $coords['lng'];
+            }
+        }
+
         OwnerShop::find($id)->update($reqData);
-        $data =OwnerShop::find($id);
+        $data = OwnerShop::find($id);
         return response()->json(['msg' => 'Shop  update successfully', 'data' => $data, 'success' => true], 200);
     }
 
@@ -126,7 +146,7 @@ class OwnerShopController extends Controller
     }
     public function singleShop($id)
     {
-        $shop = OwnerShop::find($id)->setAppends(['imageUri', 'avg_rating', 'packageData','serviceData',]);
+        $shop = OwnerShop::find($id)->setAppends(['imageUri', 'avg_rating', 'packageData', 'serviceData',]);
         $cat = SubCategories::whereIn('id', $shop->service_id)->groupBy('cat_id')->pluck('cat_id');
         $shop['cate'] = Category::whereIn('id', $cat)->where('status', 1)->get(['id', 'name', 'icon']);
         return response()->json(['msg' => null, 'data' => $shop, 'success' => true], 200);
@@ -141,13 +161,13 @@ class OwnerShopController extends Controller
     public function allShop()
     {
 
-        $master =  OwnerShop::where('status', 1)->get(['name', 'id', 'image', 'address']);
+        $master = OwnerShop::where('status', 1)->get(['name', 'id', 'image', 'address']);
         return response()->json(['msg' => null, 'data' => $master, 'success' => true], 200);
     }
     public function shopByCategory($id)
     {
         $ids = SubCategories::where([['cat_id', $id], ['status', 1]])->orderBy('owner_id')->pluck('owner_id');
-        $master =  OwnerShop::whereIn('owner_id', $ids)->where('status', 1)->get(['name', 'id', 'image', 'address']);
+        $master = OwnerShop::whereIn('owner_id', $ids)->where('status', 1)->get(['name', 'id', 'image', 'address']);
         return response()->json(['msg' => null, 'data' => $master, 'success' => true], 200);
     }
     public function packageSingle($id)
@@ -157,7 +177,7 @@ class OwnerShopController extends Controller
     public function waitingBooking()
     {
         # code...
-        $data =     BookingMaster::with(['user:id,name,image', 'shop:id,name'])->where([['owner_id', Auth::id()], ['status', 0]])->get(['id', 'start_time', 'end_time', 'status', 'address', 'shop_id', 'vehicle_id', 'service_type', 'booking_id', 'user_id', 'amount']);
+        $data = BookingMaster::with(['user:id,name,image', 'shop:id,name'])->where([['owner_id', Auth::id()], ['status', 0]])->get(['id', 'start_time', 'end_time', 'status', 'address', 'shop_id', 'vehicle_id', 'service_type', 'booking_id', 'user_id', 'amount']);
         return response()->json(['msg' => null, 'data' => $data, 'success' => true], 200);
     }
     public function allBooking()
@@ -203,7 +223,32 @@ class OwnerShopController extends Controller
     }
     public function notification()
     {
-        $data =  Notifications::where('owner_id', Auth::id())->orderBy('created_at', "desc")->get();
+        $data = Notifications::where('owner_id', Auth::id())->orderBy('created_at', "desc")->get();
+        return response()->json(['msg' => null, 'data' => $data, 'success' => true], 200);
+    }
+
+    public function searchByLocation(Request $request)
+    {
+        $request->validate([
+            'lat' => 'required',
+            'lng' => 'required',
+        ]);
+
+        $lat = $request->lat;
+        $lng = $request->lng;
+        $radius = $request->radius ?? 50; // default 50km
+
+        $data = OwnerShop::select('*')
+            ->selectRaw("( 6371 * acos( cos( radians(?) ) *
+                cos( radians( lat ) )
+                * cos( radians( lng ) - radians(?) )
+                + sin( radians(?) ) *
+                sin( radians( lat ) ) ) ) AS distance", [$lat, $lng, $lat])
+            ->where('status', 1)
+            ->having("distance", "<", $radius)
+            ->orderBy("distance")
+            ->get();
+
         return response()->json(['msg' => null, 'data' => $data, 'success' => true], 200);
     }
 }
