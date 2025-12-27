@@ -238,6 +238,7 @@ class OwnerShopController extends Controller
         $lng = $request->lng;
         $radius = $request->radius ?? 50; // default 50km
 
+
         if (DB::connection() instanceof \Illuminate\Database\SQLiteConnection) {
             $pdo = DB::connection()->getPdo();
             $pdo->sqliteCreateFunction('acos', 'acos', 1);
@@ -246,16 +247,25 @@ class OwnerShopController extends Controller
             $pdo->sqliteCreateFunction('sin', 'sin', 1);
         }
 
-        $data = OwnerShop::select('*')
-            ->selectRaw("( 6371 * acos( cos( radians(?) ) *
-                cos( radians( lat ) )
-                * cos( radians( lng ) - radians(?) )
-                + sin( radians(?) ) *
-                sin( radians( lat ) ) ) ) AS distance", [$lat, $lng, $lat])
-            ->where('status', 1)
-            ->having("distance", "<", $radius)
-            ->orderBy("distance")
-            ->get();
+        // Use raw SQL for SQLite compatibility with distance filtering
+        $sql = "SELECT *, 
+                ( 6371 * acos( cos( radians(?) ) *
+                    cos( radians( lat ) )
+                    * cos( radians( lng ) - radians(?) )
+                    + sin( radians(?) ) *
+                    sin( radians( lat ) ) ) ) AS distance
+                FROM owner_shops
+                WHERE status = 1
+                ORDER BY distance";
+
+        $results = DB::select($sql, [$lat, $lng, $lat]);
+
+        // Filter by radius in PHP since SQLite has issues with HAVING on calculated columns
+        $data = collect($results)->filter(function ($shop) use ($radius) {
+            return $shop->distance < $radius;
+        })->values();
+
+
 
         return response()->json(['msg' => null, 'data' => $data, 'success' => true], 200);
     }
