@@ -56,9 +56,7 @@ Route::get('/data-deletion', 'DataDeletionController@index')->name('data-deletio
 Route::post('/data-deletion', 'DataDeletionController@store')->name('data-deletion.store');
 
 // Privacy Policy (Public)
-Route::get('/privacy-policy', function () {
-    return view('privacy-policy');
-})->name('privacy-policy');
+Route::get('/privacy', 'DataDeletionController@privacyPolicy')->name('privacy-policy');
 
 // Route::get('/wpTesting', 'Admin\TwilioController@index');
 Route::get('/paypal', 'AppHelper@paypaln');

@@ -59,4 +59,12 @@ class DataDeletionController extends Controller
     {
         return view('data-deletion.thank-you');
     }
+
+    /**
+     * Show privacy policy page
+     */
+    public function privacyPolicy()
+    {
+        return view('privacy-policy');
+    }
 }
