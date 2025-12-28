@@ -7,10 +7,10 @@
             <div class="container">
                 <div class="row align-items-center min-vh-100 py-5">
                     <div class="col-lg-6" style="color: #ffffff;">
-                        <h1 class="display-2 font-weight-bold mb-4 animate-fade-in">
+                        <h1 class="display-2 font-weight-bold mb-4 animate-fade-in" style="color: #ffffff;">
                             Premium Car Wash<br>At Your Doorstep
                         </h1>
-                        <p class="lead mb-4">
+                        <p class="lead mb-4" style="color: #ffffff;">
                             Book professional car wash and detailing services with just a few taps. Quality service,
                             convenience, and care for your vehicle.
                         </p>
@@ -27,16 +27,16 @@
                         <div class="hero-stats mt-5">
                             <div class="row text-center">
                                 <div class="col-4">
-                                    <h3 class="font-weight-bold mb-0">500+</h3>
-                                    <small>Happy Customers</small>
+                                    <h3 class="font-weight-bold mb-0" style="color: #ffffff;">500+</h3>
+                                    <small style="color: #ffffff;">Happy Customers</small>
                                 </div>
                                 <div class="col-4">
-                                    <h3 class="font-weight-bold mb-0">50+</h3>
-                                    <small>Service Providers</small>
+                                    <h3 class="font-weight-bold mb-0" style="color: #ffffff;">50+</h3>
+                                    <small style="color: #ffffff;">Service Providers</small>
                                 </div>
                                 <div class="col-4">
-                                    <h3 class="font-weight-bold mb-0">4.8★</h3>
-                                    <small>Average Rating</small>
+                                    <h3 class="font-weight-bold mb-0" style="color: #ffffff;">4.8★</h3>
+                                    <small style="color: #ffffff;">Average Rating</small>
                                 </div>
                             </div>
                         </div>
