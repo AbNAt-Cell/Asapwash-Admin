@@ -269,12 +269,12 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer bg-dark text-white py-5">
+    <footer class="footer py-5" style="background-color: #172b4d; color: #ffffff;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h4 class="font-weight-bold mb-3">Asapwash</h4>
-                    <p class="text-muted">
+                    <p style="color: #ffffff;">
                         Premium car wash and detailing services at your doorstep. Quality, convenience, and care for your
                         vehicle.
                     </p>
@@ -293,27 +293,29 @@
                 <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
                     <h5 class="font-weight-bold mb-3">Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-muted">About Us</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted">Services</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted">Pricing</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted">Contact</a></li>
+                        <li class="mb-2"><a href="#" style="color: #ffffff;">About Us</a></li>
+                        <li class="mb-2"><a href="#" style="color: #ffffff;">Services</a></li>
+                        <li class="mb-2"><a href="#" style="color: #ffffff;">Pricing</a></li>
+                        <li class="mb-2"><a href="#" style="color: #ffffff;">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <h5 class="font-weight-bold mb-3">Legal</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{{ route('privacy-policy') }}" class="text-muted">Privacy Policy</a></li>
-                        <li class="mb-2"><a href="#" class="text-muted">Terms of Service</a></li>
-                        <li class="mb-2"><a href="{{ route('data-deletion.index') }}" class="text-muted">Data Deletion</a>
+                        <li class="mb-2"><a href="{{ route('privacy-policy') }}" style="color: #ffffff;">Privacy Policy</a>
+                        </li>
+                        <li class="mb-2"><a href="#" style="color: #ffffff;">Terms of Service</a></li>
+                        <li class="mb-2"><a href="{{ route('data-deletion.index') }}" style="color: #ffffff;">Data
+                                Deletion</a>
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h5 class="font-weight-bold mb-3">Contact</h5>
-                    <p class="text-muted mb-2">
+                    <p class="mb-2" style="color: #ffffff;">
                         <i class="ni ni-email-83 mr-2"></i> support@asapwash.cloud
                     </p>
-                    <p class="text-muted mb-2">
+                    <p class="mb-2" style="color: #ffffff;">
                         <i class="ni ni-support-16 mr-2"></i> 24/7 Support
                     </p>
                 </div>
@@ -321,10 +323,11 @@
             <hr class="my-4 bg-secondary">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-left">
-                    <p class="text-muted mb-0">&copy; {{ date('Y') }} Asapwash. All rights reserved.</p>
+                    <p class="mb-0" style="color: #ffffff;">&copy; {{ date('Y') }} Asapwash. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-center text-md-right">
-                    <p class="text-muted mb-0">Made by Abnat <i class="ni ni-favourite-28 text-danger"></i> for car owners
+                    <p class="mb-0" style="color: #ffffff;">Made by Abnat <i class="ni ni-favourite-28 text-danger"></i> for
+                        car owners
                     </p>
                 </div>
             </div>
