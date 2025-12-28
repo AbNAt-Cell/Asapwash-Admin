@@ -3,11 +3,10 @@
 @section('content')
     <!-- Hero Section -->
     <div class="hero-section position-relative overflow-hidden">
-        <div class="hero-background"
-            style="background: linear-gradient(135deg, rgba(94, 114, 228, 0.95) 0%, rgba(130, 94, 228, 0.95) 100%), url('{{ asset('.gemini/antigravity/brain/8cf2c1cf-ef63-41b2-b80d-a8d663f4119d/car_wash_hero_1766921109727.png') }}') center/cover;">
+        <div class="hero-background" style="background-color: #172b4d; padding-top: 80px; padding-bottom: 80px;">
             <div class="container">
                 <div class="row align-items-center min-vh-100 py-5">
-                    <div class="col-lg-6 text-white">
+                    <div class="col-lg-6" style="color: #ffffff;">
                         <h1 class="display-2 font-weight-bold mb-4 animate-fade-in">
                             Premium Car Wash<br>At Your Doorstep
                         </h1>
