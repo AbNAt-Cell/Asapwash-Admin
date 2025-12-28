@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('home');
-    }else{
+    } else {
         return view('welcome');
     }
 });
@@ -50,6 +50,11 @@ Auth::routes();
 
 Route::post('/active', 'Admin\AdminSettingController@active')->middleware('web');
 Route::post('/saveAdminData', 'Admin\AdminSettingController@setup')->name('saveAdminData');
+
+// Data Deletion Request Routes (Public)
+Route::get('/data-deletion', 'DataDeletionController@index')->name('data-deletion.index');
+Route::post('/data-deletion', 'DataDeletionController@store')->name('data-deletion.store');
+
 // Route::get('/wpTesting', 'Admin\TwilioController@index');
 Route::get('/paypal', 'AppHelper@paypaln');
 Route::group(['middleware' => 'auth'], function () {
