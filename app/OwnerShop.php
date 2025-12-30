@@ -41,15 +41,15 @@ class OwnerShop extends Model
     }
     public function getServiceIdAttribute($value)
     {
-        return explode(',', $value);
+        return $value ? explode(',', $value) : [];
     }
     public function getEmployeeIdAttribute($value)
     {
-        return explode(',', $value);
+        return $value ? explode(',', $value) : [];
     }
     public function getPackageIdAttribute($value)
     {
-        return explode(',', $value);
+        return $value ? explode(',', $value) : [];
     }
 
     public function getAvgRatingAttribute()
@@ -65,14 +65,23 @@ class OwnerShop extends Model
     }
     public function getServiceDataAttribute()
     {
+        if (!isset($this->attributes['service_id']) || empty($this->attributes['service_id'])) {
+            return [];
+        }
         return SubCategories::whereIn('id', explode(',', $this->attributes['service_id']))->get(['name', 'id', 'description', 'duration', 'price']);
     }
     public function getEmployeeDataAttribute()
     {
+        if (!isset($this->attributes['employee_id']) || empty($this->attributes['employee_id'])) {
+            return [];
+        }
         return ShopEmployee::whereIn('id', explode(',', $this->attributes['employee_id']))->get(['name', 'id', 'email', 'online', 'image']);
     }
     public function getPackageDataAttribute()
     {
+        if (!isset($this->attributes['package_id']) || empty($this->attributes['package_id'])) {
+            return [];
+        }
         return Package::whereIn('id', explode(',', $this->attributes['package_id']))->get();
     }
     public function Reviews()

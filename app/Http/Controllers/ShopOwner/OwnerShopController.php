@@ -52,31 +52,76 @@ class OwnerShopController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
-            'name' => 'bail|required',
-            'address' => 'bail|required',
-            'phone_no' => 'bail|required',
-            'start_time' => 'bail|required',
-            'end_time' => 'bail|required'
-        ]);
-        $reqData = $request->all();
+        try {
+            // Validate request
+            $request->validate([
+                'name' => 'bail|required',
+                'address' => 'bail|required',
+                'phone_no' => 'bail|required',
+                'start_time' => 'bail|required',
+                'end_time' => 'bail|required'
+            ]);
 
-        if (isset($reqData['image'])) {
-            $reqData['image'] = (new AppHelper)->saveBase64($reqData['image']);
-        }
+            $reqData = $request->all();
 
-        if (!isset($reqData['lat']) || !isset($reqData['lng'])) {
-            $coords = GoogleMapsHelper::getCoordinates($reqData['address']);
-            if ($coords) {
-                $reqData['lat'] = $coords['lat'];
-                $reqData['lng'] = $coords['lng'];
+            // Handle image upload
+            if (isset($reqData['image'])) {
+                $reqData['image'] = (new AppHelper)->saveBase64($reqData['image']);
             }
-        }
 
-        $reqData['owner_id'] = Auth::id();
-        $data = OwnerShop::create($reqData);
-        return response()->json(['msg' => 'Shop added successfully', 'data' => $data, 'success' => true], 200);
+            // Handle coordinates - use provided lat/lng or geocode the address
+            if (!isset($reqData['lat']) || !isset($reqData['lng'])) {
+                $coords = GoogleMapsHelper::getCoordinates($reqData['address']);
+                if ($coords) {
+                    $reqData['lat'] = $coords['lat'];
+                    $reqData['lng'] = $coords['lng'];
+                }
+            }
+
+            // Get authenticated owner ID
+            $ownerId = Auth::id();
+            if (!$ownerId) {
+                \Log::error('Shop creation failed: User not authenticated');
+                return response()->json([
+                    'msg' => 'Authentication required. Please log in again.',
+                    'success' => false
+                ], 401);
+            }
+
+            $reqData['owner_id'] = $ownerId;
+
+            // Create shop
+            $data = OwnerShop::create($reqData);
+
+            \Log::info('Shop created successfully', ['shop_id' => $data->id, 'owner_id' => $ownerId]);
+
+            return response()->json([
+                'msg' => 'Shop added successfully',
+                'data' => $data,
+                'success' => true
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Shop creation validation error', ['errors' => $e->errors()]);
+            return response()->json([
+                'msg' => 'Validation failed',
+                'errors' => $e->errors(),
+                'success' => false
+            ], 422);
+
+        } catch (\Exception $e) {
+            \Log::error('Shop creation error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'msg' => 'Error creating shop: ' . $e->getMessage(),
+                'success' => false
+            ], 500);
+        }
     }
 
     /**
@@ -89,7 +134,7 @@ class OwnerShopController extends Controller
     {
         //
         $shop = OwnerShop::find($id)->setAppends(['imageUri', 'avg_rating', 'packageData', 'serviceData', 'employeeData']);
-        $cat = SubCategories::whereIn('id', $shop->service_id)->groupBy('cat_id')->pluck('cat_id');
+        $cat = SubCategories::whereIn('id', $shop->service_id)->pluck('cat_id')->unique();
         $shop['cate'] = Category::whereIn('id', $cat)->where('status', 1)->get(['id', 'name', 'icon']);
         return response()->json(['msg' => null, 'data' => $shop, 'success' => true], 200);
     }
@@ -147,7 +192,7 @@ class OwnerShopController extends Controller
     public function singleShop($id)
     {
         $shop = OwnerShop::find($id)->setAppends(['imageUri', 'avg_rating', 'packageData', 'serviceData',]);
-        $cat = SubCategories::whereIn('id', $shop->service_id)->groupBy('cat_id')->pluck('cat_id');
+        $cat = SubCategories::whereIn('id', $shop->service_id)->pluck('cat_id')->unique();
         $shop['cate'] = Category::whereIn('id', $cat)->where('status', 1)->get(['id', 'name', 'icon']);
         return response()->json(['msg' => null, 'data' => $shop, 'success' => true], 200);
     }
