@@ -306,11 +306,14 @@ class OwnerShopController extends Controller
         $results = DB::select($sql, [$lat, $lng, $lat]);
 
         // Filter by radius in PHP since SQLite has issues with HAVING on calculated columns
-        $data = collect($results)->filter(function ($shop) use ($radius) {
+        $filteredResults = collect($results)->filter(function ($shop) use ($radius) {
             return $shop->distance < $radius;
         })->values();
 
-
+        // Transform raw results through Eloquent model to get imageUri and avg_rating accessors
+        $data = $filteredResults->map(function ($shop) {
+            return OwnerShop::find($shop->id);
+        })->filter()->values();
 
         return response()->json(['msg' => null, 'data' => $data, 'success' => true], 200);
     }
