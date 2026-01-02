@@ -36,7 +36,7 @@ class OwnerShop extends Model
     {
         if (isset($this->attributes['image'])) {
 
-            return url('upload/') . '/' . $this->attributes['image'];
+            return url('public/upload/') . '/' . $this->attributes['image'];
         }
     }
     public function getServiceIdAttribute($value)
