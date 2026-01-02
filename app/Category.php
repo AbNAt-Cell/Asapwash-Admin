@@ -19,7 +19,10 @@ class Category extends Model
     ];
 
     protected $fillable = [
-        'name', 'icon', 'is_trending', 'status'
+        'name',
+        'icon',
+        'is_trending',
+        'status'
     ];
     protected $hidden = [
         'created_at',
@@ -31,7 +34,7 @@ class Category extends Model
     {
         if (isset($this->attributes['icon'])) {
 
-            return url('upload/') . '/' . $this->attributes['icon'];
+            return url('public/upload/') . '/' . $this->attributes['icon'];
         }
     }
     public function Service()
